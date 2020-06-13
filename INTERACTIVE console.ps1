@@ -352,4 +352,35 @@ COMMANDS:
 '| Add-Content -Path $Profile.CurrentUserAllHosts -Encoding Default
 <# FIN DEL SCRIPT DE INTERACTIVE CONSOLE
 .AUTHOR = krip4Us@github.com
+
+function Test_Port {
+    $computer = Read-Host "Computername | IP Address?"
+
+    (1..80) | Foreach-Object -Process {
+        If (($a = Test-NetConnection $computer -Port $_ -WarningAction SilentlyContinue).tcpTestSucceeded -eq $true) {
+            Write-Host $a.Computername $a.RemotePort -ForegroundColor Green -Separator " ==> "
+        } 
+        else {
+            Write-Host $a.Computername $a.RemotePort -Separator " ==> " -ForegroundColor Red
+        }
+    }
+}
+function Test_Port1 {
+    $computer = Read-Host "Computername | IP Address?"
+
+    (80..443) | Foreach-Object -Process {
+        If (($a = Test-NetConnection $computer -Port $_ -WarningAction SilentlyContinue).tcpTestSucceeded -eq $true) {
+            Write-Host $a.Computername $a.RemotePort -ForegroundColor Green -Separator " ==> "
+        } 
+        else {
+            Write-Host $a.Computername $a.RemotePort -Separator " ==> " -ForegroundColor Red
+        }
+    }
+}
+Test_Port
+Read-Host "continue scanning ports to 80..443?(y/n)" | ForEach-Object{
+    if ($_ -eq "y") {
+        Test_Port1
+    }
+}
 #>
